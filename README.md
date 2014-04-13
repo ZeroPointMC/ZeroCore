@@ -1,0 +1,4 @@
+ZeroCore
+========
+
+General Java utilities
