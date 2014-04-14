@@ -11,12 +11,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import zeropoint.core.io.file.ZeroCoreFileBase;
-import zeropoint.core.logger.LoggerFactory;
-import zeropoint.core.logger.handler.LoggingConsoleHandler;
+import zeropoint.core.io.file.FileBase;
+import zeropoint.core.logger.LoggerConfig;
+import zeropoint.core.logger.LoggingFormatter;
 
 
 /**
@@ -31,11 +33,15 @@ public class ConfigFile {
 	protected LockableProperties conf = new LockableProperties();
 	protected String path = "";
 	protected boolean loaded = false;
-	protected static final Logger LOGGER = LoggerFactory.create(new LoggingConsoleHandler(), Level.ALL);
+	protected static final Logger LOGGER = LoggerConfig.config(Logger.getLogger("ConfigFile"), 0, new LoggingFormatter(LoggingFormatter.FLAG_TIME_FULL), Level.ALL, new ConsoleHandler());
 	public ConfigFile(String file) {
+		Handler h = new ConsoleHandler();
+		h.setFormatter(new LoggingFormatter(LoggingFormatter.FLAG_TIME_FULL));
+		LOGGER.addHandler(h);
+		LOGGER.setLevel(Level.ALL);
 		path = file;
 		try {
-			new ZeroCoreFileBase(file).create();
+			new FileBase(file).create();
 		}
 		catch (IOException e) {}
 	}
@@ -118,7 +124,7 @@ public class ConfigFile {
 			out.close();
 		}
 		catch (FileNotFoundException e) {
-			new ZeroCoreFileBase(path).create();
+			new FileBase(path).create();
 			save();
 		}
 		finally {

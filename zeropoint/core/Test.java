@@ -7,6 +7,8 @@ import java.io.StringReader;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,12 +17,11 @@ import zeropoint.core.config.ConfigFile;
 import zeropoint.core.config.Localization;
 import zeropoint.core.config.LockableProperties;
 import zeropoint.core.date.Datetime;
+import zeropoint.core.io.file.FileBase;
 import zeropoint.core.io.file.InputFile;
 import zeropoint.core.io.file.OutputFile;
-import zeropoint.core.io.file.ZeroCoreFileBase;
-import zeropoint.core.logger.LoggerFactory;
-import zeropoint.core.logger.handler.LoggingConsoleHandler;
-import zeropoint.core.logger.handler.LoggingFileHandler;
+import zeropoint.core.logger.LoggerConfig;
+import zeropoint.core.logger.LoggingFormatter;
 import zeropoint.core.shell.Shell;
 import zeropoint.core.shell.SingleParserShell;
 import zeropoint.core.shell.parser.ShellTestParser;
@@ -46,9 +47,9 @@ public final class Test {
 	public static final String testText = "Success";
 	public static final String toHash = "pony";
 	public static final String VERSION = "0.1.0";
+	private static Logger LOGGER;
 	private static int errCount = 0;
 	private static ArrayList<Handler> handlers = new ArrayList<Handler>();
-	private static Logger LOGGER;
 	private static boolean MODE_DEBUG = false;
 	private static boolean RUNNING_TESTS = false;
 	private static boolean testLogging = false;
@@ -97,10 +98,21 @@ public final class Test {
 		if (args.length > 0) {
 			for (int i = 0; i < args.length; i++ ) {
 				if (args[i].equals("-f")) {
-					handlers.add(new LoggingFileHandler("./ZeroCore.%u.log"));
+					Handler handler = null;
+					try {
+						handler = new FileHandler("./ZeroCore.%u.log");
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+						ZeroCore.explode(e);
+					}
+					handler.setFormatter(new LoggingFormatter(LoggingFormatter.FLAG_TIME_FULL));
+					handlers.add(handler);
 				}
 				else if (args[i].equals("-c")) {
-					handlers.add(new LoggingConsoleHandler());
+					Handler handler = new ConsoleHandler();
+					handler.setFormatter(new LoggingFormatter(LoggingFormatter.FLAG_TIME_FULL));
+					handlers.add(handler);
 				}
 				else if (args[i].equals("-t")) {
 					testLogging = true;
@@ -110,23 +122,16 @@ public final class Test {
 				}
 			}
 		}
-		LOGGER = LoggerFactory.create(handlers.toArray(new Handler[] {}), Level.ALL);
+		LOGGER = LoggerConfig.config(Logger.getLogger("ZeroCore"), 0, new LoggingFormatter(), Level.ALL, handlers.toArray(new Handler[] {}));
 		try {
-			LOGGER.setLevel(Level.ALL);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		try {
-			new ZeroCoreFileBase(configFile).create();
+			new FileBase(configFile).create();
 		}
 		catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Unable to create config file '" + configFile + "'", e);
 			System.exit(1);
 		}
 		try {
-			new ZeroCoreFileBase(configFile).deleteOnExit();
+			new FileBase(configFile).deleteOnExit();
 		}
 		catch (Exception e) {}
 	}

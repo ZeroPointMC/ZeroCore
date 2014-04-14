@@ -9,13 +9,14 @@ import java.io.Reader;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import zeropoint.core.Test;
 import zeropoint.core.exception.InvalidSyntaxException;
-import zeropoint.core.logger.LoggerFactory;
-import zeropoint.core.logger.handler.LoggingConsoleHandler;
+import zeropoint.core.logger.LoggerConfig;
+import zeropoint.core.logger.LoggingFormatter;
 import zeropoint.core.shell.parser.DefaultPostParser;
 import zeropoint.core.shell.parser.DefaultPreParser;
 import zeropoint.core.shell.parser.ICommandParser;
@@ -59,7 +60,7 @@ public abstract class Shell implements Runnable {
 	/**
 	 * The default Logger used by new Shell objects.
 	 */
-	protected static final Logger DEFAULT_LOGGER = LoggerFactory.create(new LoggingConsoleHandler());
+	protected static final Logger DEFAULT_LOGGER = createLogger();
 	/**
 	 * The number of IOExceptions detected so far during
 	 * the run() method's main loop.
@@ -94,6 +95,10 @@ public abstract class Shell implements Runnable {
 	 */
 	public Shell() {
 		setInput(DEFAULT_INPUTSTREAM);
+	}
+	private static Logger createLogger() {
+		Logger log = LoggerConfig.config(Logger.getLogger("Shell"), 0, new LoggingFormatter(LoggingFormatter.FLAG_TIME_FULL), Level.ALL, new ConsoleHandler());
+		return log;
 	}
 	/**
 	 * Construct a new Shell object, using the given InputStream.

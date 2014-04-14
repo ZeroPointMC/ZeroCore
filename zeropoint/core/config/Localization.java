@@ -7,7 +7,7 @@ import java.util.Set;
 
 import zeropoint.core.ILockable;
 import zeropoint.core.exception.LockedException;
-import zeropoint.core.io.file.ZeroCoreFileBase;
+import zeropoint.core.io.file.FileBase;
 
 
 /**
@@ -41,7 +41,7 @@ public class Localization implements ILockable, Cloneable {
 		loadProps(dir, locale);
 	}
 	public void loadProps(String file) {
-		loadProps("./locale", new ZeroCoreFileBase(file).basename());
+		loadProps("./locale", new FileBase(file).basename());
 	}
 	public void loadProps(String dir, String locale) {
 		String progName = System.getProperty("sun.java.command", "ZeroCore").split("\\s+")[0];

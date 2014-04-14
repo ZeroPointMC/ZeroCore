@@ -14,10 +14,10 @@ import java.util.List;
 /**
  * InputFile allows easier reading of a file.
  * 
- * @see ZeroCoreFileBase
+ * @see FileBase
  * @author Zero Point
  */
-public class InputFile extends ZeroCoreFileBase {
+public class InputFile extends FileBase {
 	public InputFile(String fpath) {
 		super(fpath);
 	}

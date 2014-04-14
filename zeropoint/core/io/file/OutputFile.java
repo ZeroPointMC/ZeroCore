@@ -14,10 +14,10 @@ import zeropoint.core.exception.LockedException;
 /**
  * OutputFile makes it easier to deal with writing to a file.
  * 
- * @see ZeroCoreFileBase
+ * @see FileBase
  * @author Zero Point
  */
-public class OutputFile extends ZeroCoreFileBase implements Closeable, Flushable {
+public class OutputFile extends FileBase implements Closeable, Flushable {
 	protected PrintStream stream;
 	protected boolean shouldAppend = false;
 	public OutputFile(String fpath) {
