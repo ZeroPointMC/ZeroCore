@@ -11,14 +11,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import zeropoint.core.io.file.FileBase;
-import zeropoint.core.logger.LoggerConfig;
-import zeropoint.core.logger.LoggingFormatter;
 
 
 /**
@@ -29,102 +23,183 @@ import zeropoint.core.logger.LoggingFormatter;
  * 
  * @author Zero Point
  */
+// TODO: write Javadoc
 public class ConfigFile {
+	/**
+	 * The configuration properties
+	 */
 	protected LockableProperties conf = new LockableProperties();
+	/**
+	 * The path to the file we are using
+	 */
 	protected String path = "";
+	/**
+	 * Whether or not we have loaded the properties yet
+	 */
 	protected boolean loaded = false;
-	protected static final Logger LOGGER = LoggerConfig.config(Logger.getLogger("ConfigFile"), 0, new LoggingFormatter(LoggingFormatter.FLAG_TIME_FULL), Level.ALL, new ConsoleHandler());
+	/**
+	 * Initialize to a certain file
+	 * 
+	 * @param file
+	 *            - the file path to use to store properties
+	 */
 	public ConfigFile(String file) {
-		Handler h = new ConsoleHandler();
-		h.setFormatter(new LoggingFormatter(LoggingFormatter.FLAG_TIME_FULL));
-		LOGGER.addHandler(h);
-		LOGGER.setLevel(Level.ALL);
-		path = file;
+		this.path = file;
 		try {
 			new FileBase(file).create();
 		}
 		catch (IOException e) {}
 	}
+	/**
+	 * Attempts to load the config file as properties
+	 */
 	public void loadProps() {
 		unloadProps();
 		try {
-			conf.load(new FileInputStream(path));
-			loaded = true;
+			this.conf.load(new FileInputStream(this.path));
+			this.loaded = true;
 		}
-		catch (IOException e) {
-			LOGGER.log(Level.WARNING, "Unable to load configuration properties from file '" + path + "'", e);
-		}
+		catch (IOException e) {}
 	}
+	/**
+	 * Clear the current properties entirely
+	 */
 	public void unloadProps() {
-		conf = new LockableProperties();
-		loaded = false;
+		this.conf = new LockableProperties();
+		this.loaded = false;
 	}
+	/**
+	 * @return the {@link LockableProperties} used as the current config
+	 */
 	public LockableProperties getProperties() {
-		if ( !loaded) { // Delay load (if necessary) until we need the config
+		if ( !this.loaded) { // Delay load (if necessary) until we need the config
 			loadProps();
 		}
-		return conf;
+		return this.conf;
 	}
+	/**
+	 * Overwrite the current configuration
+	 * 
+	 * @param props
+	 *            - the new {@link Properties} to use
+	 */
 	public void setProperties(Properties props) {
 		unloadProps();
-		conf = (LockableProperties) props;
-		loaded = true;
+		this.conf = (LockableProperties) props;
+		this.loaded = true;
 	}
+	/**
+	 * Retrieve the value of a config key, returning <code>null</code> if it does not exist
+	 * 
+	 * @param key
+	 *            - the key to get the value of
+	 * @return the requested config value
+	 */
 	public String get(String key) {
 		return get(key, null);
 	}
+	/**
+	 * Retrieve the value of a config key, with a default value if the key does not exist
+	 * 
+	 * @param key
+	 *            - the key to get the value of
+	 * @param def
+	 *            - the default value to return if the key does not exist
+	 * @return the requested config value
+	 */
 	public String get(String key, String def) {
-		if ( !loaded) {
+		if ( !this.loaded) {
 			loadProps();
 		}
-		return conf.getProperty(key, def);
+		return this.conf.getProperty(key, def);
 	}
+	/**
+	 * Set a configuration value
+	 * 
+	 * @param key
+	 *            - the key to unset
+	 * @param val
+	 *            - the value to set the key to
+	 */
 	public void set(String key, String val) {
-		if ( !loaded) {
+		if ( !this.loaded) {
 			loadProps();
 		}
-		conf.setProperty(key, val);
+		this.conf.setProperty(key, val);
 	}
+	/**
+	 * Unset a configuration value
+	 * 
+	 * @param key
+	 *            - the key to unset
+	 */
 	public void set(String key) {
-		if ( !loaded) {
+		if ( !this.loaded) {
 			loadProps();
 		}
-		conf.remove(key);
+		this.conf.remove(key);
 	}
+	/**
+	 * Unset a configuration value
+	 * 
+	 * @param key
+	 *            - the key to unset
+	 */
 	public void unset(String key) {
 		set(key);
 	}
+	/**
+	 * Unset a configuration value
+	 * 
+	 * @param key
+	 *            - the key to unset
+	 */
 	public void remove(String key) {
 		set(key);
 	}
+	/**
+	 * Unset a configuration value
+	 * 
+	 * @param key
+	 *            - the key to unset
+	 */
 	public void delete(String key) {
 		set(key);
 	}
+	/**
+	 * @return a {@link Set} of the keys in the current configuration
+	 */
 	public Set<String> keys() {
-		if ( !loaded) {
+		if ( !this.loaded) {
 			loadProps();
 		}
-		return conf.stringPropertyNames();
+		return this.conf.stringPropertyNames();
 	}
+	/**
+	 * Saves the current configuration to the file
+	 * 
+	 * @throws IOException
+	 *             if the file cannot be written to
+	 */
 	public void save() throws IOException {
-		if ( !loaded) {
+		if ( !this.loaded) {
 			return;
 		}
 		OutputStream out = null;
 		try {
-			out = new FileOutputStream(path);
-			Set<String> keys = conf.stringPropertyNames();
+			out = new FileOutputStream(this.path);
+			Set<String> keys = this.conf.stringPropertyNames();
 			String[] keyArray = keys.toArray(new String[] {});
 			Arrays.sort(keyArray);
 			out.write((new SimpleDateFormat("# EE MMM dd yyyy kk:mm:ss.SSS zz ('GMT'Z)").format(new Date()) + "\n").getBytes());
 			for (String key : keyArray) {
-				String val = conf.getProperty(key);
+				String val = this.conf.getProperty(key);
 				out.write((key + "=" + val + "\n").getBytes());
 			}
 			out.close();
 		}
 		catch (FileNotFoundException e) {
-			new FileBase(path).create();
+			new FileBase(this.path).create();
 			save();
 		}
 		finally {

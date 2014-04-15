@@ -1,16 +1,17 @@
 package zeropoint.core;
 
 /**
- * ILockableToggle indicates that an object may be locked, and can be both locked and unlocked on demand.
+ * <code>ILockableToggle</code> indicates that an object may be locked, and can be both locked and unlocked on demand.
  * 
  * @see ILockable
- * @see ILockableLock
  * @see ILockableUnlock
  * @author Zero Point
- * @deprecated
+ * @deprecated Extends the deprecated {@linkplain ILockableUnlock} interface.
  */
-@SuppressWarnings("deprecation")
 @Deprecated
 public interface ILockableToggle extends ILockableUnlock {
+	/**
+	 * Toggle the locked state of the lockable object
+	 */
 	public void toggleLock();
 }

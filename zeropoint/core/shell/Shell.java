@@ -127,7 +127,7 @@ public abstract class Shell implements Runnable {
 	 * @return The current Shell object
 	 */
 	public Shell addCommandToBottomOfStack(String cmd) {
-		stack.add(cmd);
+		this.stack.add(cmd);
 		return this;
 	}
 	/**
@@ -139,7 +139,7 @@ public abstract class Shell implements Runnable {
 	 * @return The current Shell object
 	 */
 	public Shell addCommandToStack(String cmd) {
-		stack.add(0, cmd);
+		this.stack.add(0, cmd);
 		return this;
 	}
 	/**
@@ -148,7 +148,7 @@ public abstract class Shell implements Runnable {
 	 * @return The current Logger
 	 */
 	public Logger getLogger() {
-		return LOGGER;
+		return this.LOGGER;
 	}
 	/**
 	 * Get the current postparser (called after normal
@@ -157,7 +157,7 @@ public abstract class Shell implements Runnable {
 	 * @return The current postparser
 	 */
 	public ICommandParser getPostParser() {
-		return postParser;
+		return this.postParser;
 	}
 	/**
 	 * Get the current preparser (called before normal
@@ -166,7 +166,7 @@ public abstract class Shell implements Runnable {
 	 * @return The current preparser
 	 */
 	public ICommandPreParser getPreParser() {
-		return preParser;
+		return this.preParser;
 	}
 	/**
 	 * Register a parser object. Subclasses must provide an
@@ -185,7 +185,7 @@ public abstract class Shell implements Runnable {
 	 *            - the postparser that is being registered
 	 */
 	public void registerPostParser(ICommandParser newPostparser) {
-		postParser = newPostparser;
+		this.postParser = newPostparser;
 	}
 	/**
 	 * Register a preparser object. A preparser will be called
@@ -196,7 +196,7 @@ public abstract class Shell implements Runnable {
 	 *            - the preparser that is being registered
 	 */
 	public void registerPreParser(ICommandPreParser newPreParser) {
-		preParser = newPreParser;
+		this.preParser = newPreParser;
 	}
 	/**
 	 * Runs the Shell. This consists of processing the
@@ -208,8 +208,8 @@ public abstract class Shell implements Runnable {
 	 *             if the command cannot be parsed
 	 */
 	public void run() throws InvalidSyntaxException {
-		commandReader.setLineNumber(1);
-		shouldTerminate = false;
+		this.commandReader.setLineNumber(1);
+		this.shouldTerminate = false;
 		while (true) {
 			if (Thread.interrupted()) {
 				return;
@@ -221,23 +221,23 @@ public abstract class Shell implements Runnable {
 				return;
 			}
 			try {
-				String nextCom = commandReader.readLine();
+				String nextCom = this.commandReader.readLine();
 				if (nextCom == null) {
 					break;
 				}
 				if (doTestLogging) {
-					LOGGER.finest("Adding command to stack: " + nextCom);
+					this.LOGGER.finest("Adding command to stack: " + nextCom);
 				}
 				addCommandToBottomOfStack(nextCom);
 			}
 			catch (ClosedByInterruptException e) {
-				LOGGER.log(Level.SEVERE, "Shell thread interrupted", e);
+				this.LOGGER.log(Level.SEVERE, "Shell thread interrupted", e);
 				return;
 			}
 			catch (IOException e) {
-				LOGGER.log(Level.SEVERE, "Unable to get next command line", e);
-				errCount++ ;
-				if (errCount > maxErrCount) {
+				this.LOGGER.log(Level.SEVERE, "Unable to get next command line", e);
+				this.errCount++ ;
+				if (this.errCount > maxErrCount) {
 					if (Test.isTestRun()) {
 						Test.incrementErrorCount();
 					}
@@ -256,7 +256,7 @@ public abstract class Shell implements Runnable {
 	 */
 	public Shell setLogger(Logger newLogger) {
 		if (newLogger != null) {
-			LOGGER = newLogger;
+			this.LOGGER = newLogger;
 		}
 		return this;
 	}
@@ -266,7 +266,7 @@ public abstract class Shell implements Runnable {
 	 * of <tt>exit</tt> or <tt>quit</tt> type commands.
 	 */
 	public void terminate() {
-		shouldTerminate = true;
+		this.shouldTerminate = true;
 	}
 	/**
 	 * Unregister a parser object. Subclasses must provide
@@ -285,7 +285,7 @@ public abstract class Shell implements Runnable {
 	 * @return The current Shell object
 	 */
 	public Shell unregisterPostParser() {
-		postParser = new DefaultPostParser();
+		this.postParser = new DefaultPostParser();
 		return this;
 	}
 	/**
@@ -296,7 +296,7 @@ public abstract class Shell implements Runnable {
 	 * @return The current Shell object
 	 */
 	public Shell unregisterPreParser() {
-		preParser = new DefaultPreParser();
+		this.preParser = new DefaultPreParser();
 		return this;
 	}
 	/**
@@ -336,12 +336,12 @@ public abstract class Shell implements Runnable {
 	/**
 	 * Retrieves the LineNumberReader used to read the commands.
 	 * 
-	 * @deprecated
+	 * @deprecated External code should not interact directly with the command stream.
 	 * @return The LineNumberReader from which commands are read.
 	 */
 	@Deprecated
 	protected final LineNumberReader getCommandReader() {
-		return commandReader;
+		return this.commandReader;
 	}
 	/**
 	 * Process a single command using <b>only</b> the normal
@@ -356,7 +356,7 @@ public abstract class Shell implements Runnable {
 	/**
 	 * Set the command stream to the default InputStream
 	 * 
-	 * @deprecated
+	 * @deprecated May be removed in the near future.
 	 */
 	@Deprecated
 	protected final void setInput() {
@@ -378,7 +378,7 @@ public abstract class Shell implements Runnable {
 	 *            - the {@link Reader} to read commands from
 	 */
 	protected final void setInput(Reader reader) {
-		commandReader = new LineNumberReader(reader);
+		this.commandReader = new LineNumberReader(reader);
 	}
 	/**
 	 * Check whether or not a single command can be parsed.
@@ -406,9 +406,9 @@ public abstract class Shell implements Runnable {
 	 */
 	protected boolean processCommandStack() throws InvalidSyntaxException {
 		if (doTestLogging) {
-			LOGGER.finest("Processing command stack");
+			this.LOGGER.finest("Processing command stack");
 		}
-		Iterator<String> iter = stack.iterator();
+		Iterator<String> iter = this.stack.iterator();
 		MAINLOOP: while (true) {
 			if (Thread.interrupted() || !iter.hasNext()) {
 				break MAINLOOP;
@@ -419,49 +419,49 @@ public abstract class Shell implements Runnable {
 				continue MAINLOOP;
 			}
 			line = line.trim();
-			if ((preParser != null) && preParser.canParse(line)) {
+			if ((this.preParser != null) && this.preParser.canParse(line)) {
 				if (doTestLogging) {
-					LOGGER.finest("Preparsing command: " + line);
+					this.LOGGER.finest("Preparsing command: " + line);
 				}
-				line = preParser.parse(line, this);
-				if (shouldTerminate) {
+				line = this.preParser.preparse(line, this);
+				if (this.shouldTerminate) {
 					if (doTestLogging) {
-						LOGGER.finest("Aborting, preparser set exit flag");
+						this.LOGGER.finest("Aborting, preparser set exit flag");
 					}
 					return true;
 				}
 				if (line == null) {
 					if (doTestLogging) {
-						LOGGER.finest("Aborting, preparser returned null");
+						this.LOGGER.finest("Aborting, preparser returned null");
 					}
 					continue MAINLOOP;
 				}
 				if (doTestLogging) {
-					LOGGER.finest("New command: " + line);
+					this.LOGGER.finest("New command: " + line);
 				}
 				line = line.trim();
 			}
-			else if ((preParser == null) && doTestLogging) {
-				LOGGER.finest("No preparser found");
+			else if ((this.preParser == null) && doTestLogging) {
+				this.LOGGER.finest("No preparser found");
 			}
 			else if (doTestLogging) {
-				LOGGER.finest("Preparser ignored command: " + line);
+				this.LOGGER.finest("Preparser ignored command: " + line);
 			}
 			if (doTestLogging) {
-				LOGGER.finest("Processing command: " + line);
+				this.LOGGER.finest("Processing command: " + line);
 			}
 			processCommand(line);
-			if ((postParser != null) && postParser.canParse(line)) {
-				postParser.parse(line, this);
+			if ((this.postParser != null) && this.postParser.canParse(line)) {
+				this.postParser.parse(line, this);
 			}
-			if (shouldTerminate) {
+			if (this.shouldTerminate) {
 				return true;
 			}
-			else if ((postParser == null) && doTestLogging) {
-				LOGGER.finest("No postparser found");
+			else if ((this.postParser == null) && doTestLogging) {
+				this.LOGGER.finest("No postparser found");
 			}
-			else if ((postParser != null) && doTestLogging) {
-				LOGGER.finest("Post parser ignored command");
+			else if ((this.postParser != null) && doTestLogging) {
+				this.LOGGER.finest("Post parser ignored command");
 			}
 		}
 		return false;

@@ -124,7 +124,7 @@ public abstract class ZeroCoreExceptionBase extends RuntimeException {
 	 *            - The localization for this exception's message
 	 */
 	protected final void init(String msg, Throwable e, Localization loc) {
-		message = msg;
+		this.message = msg;
 		if ((e != null) && (this.getCause() == null)) {
 			this.initCause(e);
 		}
@@ -139,7 +139,7 @@ public abstract class ZeroCoreExceptionBase extends RuntimeException {
 	 * @return The exception itself
 	 */
 	public final ZeroCoreExceptionBase setLocalizationObject(Localization localizer) {
-		l = localizer;
+		this.l = localizer;
 		return this;
 	}
 	/**
@@ -148,7 +148,7 @@ public abstract class ZeroCoreExceptionBase extends RuntimeException {
 	 * @return The current Localization object used by this exception
 	 */
 	public final Localization getLocalizationObject() {
-		return l;
+		return this.l;
 	}
 	/**
 	 * Indicates whether there is a {@linkplain Localization} object registered with this exception
@@ -158,7 +158,7 @@ public abstract class ZeroCoreExceptionBase extends RuntimeException {
 	 *         <tt>false</tt> otherwise
 	 */
 	public final boolean isLocalizing() {
-		return l != null;
+		return this.l != null;
 	}
 	@Override
 	public final String toString() {
@@ -167,7 +167,7 @@ public abstract class ZeroCoreExceptionBase extends RuntimeException {
 	@Override
 	public String getLocalizedMessage() {
 		try {
-			return l.localize(this.getMessage());
+			return this.l.localize(this.getMessage());
 		}
 		catch (Exception e) {
 			return this.getMessage();
@@ -175,16 +175,26 @@ public abstract class ZeroCoreExceptionBase extends RuntimeException {
 	}
 	@Override
 	public final String getMessage() {
-		return message == null ? "" : message;
+		return this.message == null ? "" : this.message;
 	}
+	/**
+	 * Set the message for the exception
+	 * 
+	 * @param msg
+	 *            - the message
+	 * @return the exception object
+	 */
 	public final ZeroCoreExceptionBase setMessage(String msg) {
-		message = msg;
+		this.message = msg;
 		return this;
 	}
 	@Override
-	public final ZeroCoreExceptionBase initCause(Throwable cause) {
+	public final synchronized ZeroCoreExceptionBase initCause(Throwable cause) {
 		super.initCause(cause);
 		return this;
 	}
+	/**
+	 * Allows subclasses to perform automatic initialization
+	 */
 	protected void initialize() {}
 }

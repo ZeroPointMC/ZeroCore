@@ -18,19 +18,41 @@ import java.util.List;
  * @author Zero Point
  */
 public class InputFile extends FileBase {
+	/**
+	 * Create a new InputFile pointing to the given path
+	 * 
+	 * @param fpath
+	 *            - the path of the file
+	 */
 	public InputFile(String fpath) {
 		super(fpath);
 	}
+	/**
+	 * Read the entire contents of the file
+	 * 
+	 * @return the contents of the entire file
+	 * @throws IOException
+	 *             if the file cannot be read
+	 */
+	@SuppressWarnings("deprecation")
 	public String readAll() throws IOException {
 		lock();
 		try {
 			return new String(Files.readAllBytes(Paths.get(path())));
 		}
 		catch (IOException e) {
-			isLocked = false;
+			this.isLocked = false;
 			throw e;
 		}
 	}
+	/**
+	 * Reads the individual lines of the file - doesn't work yet
+	 * 
+	 * @return an array of the lines in the file
+	 * @throws IOException
+	 *             if the file cannot be read
+	 */
+	@SuppressWarnings("deprecation")
 	public String[] readLines() throws IOException {
 		lock();
 		try {
@@ -47,7 +69,7 @@ public class InputFile extends FileBase {
 			return lines.toArray(new String[] {});
 		}
 		catch (IOException e) {
-			isLocked = false;
+			this.isLocked = false;
 			throw e;
 		}
 	}

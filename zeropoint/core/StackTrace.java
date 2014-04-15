@@ -6,9 +6,15 @@ package zeropoint.core;
  * @author Zero Point
  */
 public class StackTrace {
+	/**
+	 * @return the parent method of the method that called getCallingMethod()
+	 */
 	public static String getCallingMethod() {
 		return trace()[2].getMethodName();
 	}
+	/**
+	 * @return the parent class of the method that called getCallingClass()
+	 */
 	public static String getCallingClass() {
 		try {
 			return Class.forName(trace()[2].getClassName()).getSimpleName();
@@ -17,12 +23,21 @@ public class StackTrace {
 			return "<unknown class>";
 		}
 	}
+	/**
+	 * @return the long (fully qualified) parent class of the method that called getLongCallingClass()
+	 */
 	public static String getLongCallingClass() {
 		return trace()[2].getClassName();
 	}
+	/**
+	 * @return the line at which the caller of getCallingLine() was called
+	 */
 	public static int getCallingLine() {
 		return trace()[2].getLineNumber();
 	}
+	/**
+	 * @return an array of StackTraceElements leading up to the caller of trace()
+	 */
 	public static StackTraceElement[] trace() {
 		StackTraceElement[] stack = new Exception().getStackTrace();
 		StackTraceElement[] trace = new StackTraceElement[stack.length - 1];

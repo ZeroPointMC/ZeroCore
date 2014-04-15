@@ -17,21 +17,30 @@ public class StringBufferWriter extends Writer implements Cloneable, IBuffer {
 	private StringBuffer buffer = new StringBuffer();
 	@Override
 	public StringBufferWriter clone() {
-		StringBufferWriter clone = new StringBufferWriter(lock);
-		clone.buffer = new StringBuffer(buffer.toString());
+		StringBufferWriter clone = new StringBufferWriter(this.lock);
+		clone.buffer = new StringBuffer(this.buffer.toString());
 		return clone;
 	}
+	/**
+	 * Create a new StringBufferWriter that locks on the given object
+	 */
 	public StringBufferWriter() {
 		super();
 	}
-	public StringBufferWriter(Object l) {
-		super(l);
+	/**
+	 * Create a new StringBufferWriter that locks on the given object
+	 * 
+	 * @param initLock
+	 *            - the object to lock with
+	 */
+	public StringBufferWriter(Object initLock) {
+		super(initLock);
 	}
 	public IBuffer setBuffer(CharSequence buf) {
 		return this;
 	}
 	public String getBuffer() {
-		return buffer.toString();
+		return this.buffer.toString();
 	}
 	public IBuffer appendToBuffer(CharSequence buf) {
 		return this;
@@ -45,7 +54,7 @@ public class StringBufferWriter extends Writer implements Cloneable, IBuffer {
 	public void flush() {}
 	@Override
 	public void write(char[] cbuf, int off, int len) {
-		buffer.append(cbuf, off, len);
+		this.buffer.append(cbuf, off, len);
 	}
 	@Override
 	public String toString() {

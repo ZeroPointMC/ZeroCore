@@ -25,49 +25,54 @@ import zeropoint.core.exception.LockedException;
  */
 public class LockableProperties extends Properties implements ILockable {
 	private static final long serialVersionUID = -8110854083552206754L;
+	/**
+	 * The message to use when throwing an exception
+	 */
 	protected static final String ERRMSG = "Cannot load properties to a locked LockableProperties object";
+	/**
+	 * Indicates whether the object can be modified
+	 */
 	protected boolean isLocked = false;
 	@Override
-	public LockableProperties clone() {
+	public synchronized LockableProperties clone() {
 		LockableProperties clone = (LockableProperties) super.clone();
 		clone.isLocked = false;
 		return clone;
 	}
 	public void lock() {
-		isLocked = true;
+		this.isLocked = true;
 	}
 	public boolean locked() {
-		return isLocked;
+		return this.isLocked;
 	}
 	@Override
-	public void load(InputStream inStream) throws IOException {
+	public synchronized void load(InputStream inStream) throws IOException {
 		if (locked()) {
 			throw new LockedException().setMessage(ERRMSG);
 		}
 		super.load(inStream);
 	}
 	@Override
-	public void load(Reader reader) throws IOException {
+	public synchronized void load(Reader reader) throws IOException {
 		if (locked()) {
 			throw new LockedException().setMessage(ERRMSG);
 		}
 		super.load(reader);
 	}
 	@Override
-	public void loadFromXML(InputStream in) throws InvalidPropertiesFormatException, IOException {
+	public synchronized void loadFromXML(InputStream in) throws InvalidPropertiesFormatException, IOException {
 		if (locked()) {
 			throw new LockedException().setMessage(ERRMSG);
 		}
 		super.loadFromXML(in);
 	}
 	@Override
-	@SuppressWarnings("deprecation")
 	@Deprecated
 	public void save(OutputStream out, String comments) {
 		throw new DeprecatedException();
 	}
 	@Override
-	public Object setProperty(String key, String value) {
+	public synchronized Object setProperty(String key, String value) {
 		if (locked()) {
 			throw new LockedException().setMessage(ERRMSG);
 		}

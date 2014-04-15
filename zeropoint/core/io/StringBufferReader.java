@@ -18,61 +18,70 @@ public class StringBufferReader extends Reader implements Cloneable, IBuffer {
 	private StringBuffer buffer = new StringBuffer();
 	@Override
 	public StringBufferReader clone() {
-		StringBufferReader clone = new StringBufferReader(lock);
-		clone.buffer = new StringBuffer(buffer.toString());
+		StringBufferReader clone = new StringBufferReader(this.lock);
+		clone.buffer = new StringBuffer(this.buffer.toString());
 		return clone;
 	}
+	/**
+	 * Create a new StringBufferReader
+	 */
 	public StringBufferReader() {
 		super();
 	}
+	/**
+	 * Create a new StringBufferReader that locks on the given object
+	 * 
+	 * @param initLock
+	 *            - the object to lock with
+	 */
 	public StringBufferReader(Object initLock) {
 		super(initLock);
 	}
 	public IBuffer setBuffer(CharSequence buf) {
 		if (buf != null) {
-			buffer.append(buf);
+			this.buffer.append(buf);
 		}
 		return this;
 	}
 	public String getBuffer() {
-		return buffer.toString();
+		return this.buffer.toString();
 	}
 	public IBuffer appendToBuffer(CharSequence buf) {
 		if (buf != null) {
-			buffer.append(buf);
+			this.buffer.append(buf);
 		}
 		return this;
 	}
 	public IBuffer prependToBuffer(CharSequence buf) {
 		if (buf != null) {
-			buffer = new StringBuffer(buf).append(buffer);
+			this.buffer = new StringBuffer(buf).append(this.buffer);
 		}
 		return this;
 	}
 	@Override
 	public void close() {
 		// Eh. Might as well, I suppose.
-		buffer = new StringBuffer();
+		this.buffer = new StringBuffer();
 	}
 	@Override
 	public int read(char[] cbuf, int off, int len) throws IOException {
 		for (int i = off, l = 0; l <= len; i++ , l++ ) {
-			if (buffer.toString().isEmpty()) {
+			if (this.buffer.toString().isEmpty()) {
 				return l - 1;
 			}
 			try {
-				cbuf[i] = buffer.charAt(0);
+				cbuf[i] = this.buffer.charAt(0);
 			}
 			catch (ArrayIndexOutOfBoundsException e) {
 				return l;
 			}
-			buffer.replace(0, 1, "");
+			this.buffer.replace(0, 1, "");
 		}
 		return 0;
 	}
 	@Override
 	public boolean ready() {
-		return !buffer.toString().isEmpty();
+		return !this.buffer.toString().isEmpty();
 	}
 	@Override
 	public String toString() {

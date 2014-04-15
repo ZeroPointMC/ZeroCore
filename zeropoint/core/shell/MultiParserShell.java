@@ -49,7 +49,7 @@ public class MultiParserShell extends Shell {
 	 */
 	@Override
 	public Shell registerParser(ICommandParser newParser) {
-		parserList.add(newParser);
+		this.parserList.add(newParser);
 		return this;
 	}
 	/**
@@ -57,7 +57,7 @@ public class MultiParserShell extends Shell {
 	 */
 	@Override
 	public Shell unregisterParser(ICommandParser parserToRemove) {
-		parserList.remove(parserToRemove);
+		this.parserList.remove(parserToRemove);
 		return this;
 	}
 	/**
@@ -66,7 +66,7 @@ public class MultiParserShell extends Shell {
 	 */
 	@Override
 	protected boolean verifyCommand(String command) {
-		for (ICommandParser testParser : parserList) {
+		for (ICommandParser testParser : this.parserList) {
 			if (testParser.canParse(command)) {
 				return true;
 			}
@@ -79,7 +79,7 @@ public class MultiParserShell extends Shell {
 	 */
 	@Override
 	protected void processCommand(String command) throws InvalidSyntaxException {
-		for (ICommandParser testParser : parserList) {
+		for (ICommandParser testParser : this.parserList) {
 			if (testParser.canParse(command)) {
 				testParser.parse(command, this);
 				return;

@@ -48,7 +48,7 @@ public class SingleParserShell extends Shell {
 	 */
 	@Override
 	public Shell registerParser(ICommandParser newParser) {
-		parser = newParser;
+		this.parser = newParser;
 		return this;
 	}
 	/**
@@ -59,7 +59,7 @@ public class SingleParserShell extends Shell {
 	 */
 	@Override
 	public Shell unregisterParser(ICommandParser newParser) {
-		parser = null;
+		this.parser = null;
 		return this;
 	}
 	/**
@@ -68,7 +68,7 @@ public class SingleParserShell extends Shell {
 	 */
 	@Override
 	protected boolean verifyCommand(String command) {
-		return (parser != null) && parser.canParse(command);
+		return (this.parser != null) && this.parser.canParse(command);
 	}
 	/**
 	 * Handle the given command.
@@ -76,7 +76,7 @@ public class SingleParserShell extends Shell {
 	@Override
 	protected void processCommand(String com) throws InvalidSyntaxException {
 		if (verifyCommand(com)) {
-			parser.parse(com, this);
+			this.parser.parse(com, this);
 		}
 		else {
 			throw new InvalidSyntaxException();

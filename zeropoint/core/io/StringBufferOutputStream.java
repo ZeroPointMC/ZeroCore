@@ -16,20 +16,29 @@ public class StringBufferOutputStream extends OutputStream implements Cloneable,
 	private StringBuffer buffer = new StringBuffer();
 	@Override
 	public StringBufferOutputStream clone() {
-		StringBufferOutputStream clone = new StringBufferOutputStream(buffer.toString());
+		StringBufferOutputStream clone = new StringBufferOutputStream(this.buffer.toString());
 		return clone;
 	}
+	/**
+	 * Create a new StringBufferOutputStream with a blank buffer
+	 */
 	public StringBufferOutputStream() {
-		buffer = new StringBuffer();
+		this.buffer = new StringBuffer();
 	}
+	/**
+	 * Create a new StringBufferOutputStream with the given contents
+	 * 
+	 * @param init
+	 *            - the initial contents of the buffer
+	 */
 	public StringBufferOutputStream(String init) {
-		buffer = new StringBuffer(init);
+		this.buffer = new StringBuffer(init);
 	}
 	public IBuffer setBuffer(CharSequence buf) {
 		return this;
 	}
 	public String getBuffer() {
-		return buffer.toString();
+		return this.buffer.toString();
 	}
 	public IBuffer appendToBuffer(CharSequence buf) {
 		return this;
@@ -39,7 +48,7 @@ public class StringBufferOutputStream extends OutputStream implements Cloneable,
 	}
 	@Override
 	public void write(int arg0) {
-		buffer.append(arg0);
+		this.buffer.append(arg0);
 	}
 	@Override
 	public String toString() {

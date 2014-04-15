@@ -13,6 +13,9 @@ import java.io.Writer;
  * @author Zero Point
  */
 public class NullWriter extends Writer {
+	/**
+	 * Create a new NullWriter object
+	 */
 	public NullWriter() {}
 	@Override
 	public Writer append(char c) {

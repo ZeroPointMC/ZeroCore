@@ -4,31 +4,27 @@ package zeropoint.core.math;
 import java.util.Random;
 
 
+/**
+ * Basic maths utilities
+ * 
+ * @author Zero Point
+ */
 public class MathUtil {
-	public static final byte BYTE_MAX = Byte.MAX_VALUE;
-	public static final byte BYTE_MIN = Byte.MIN_VALUE;
-	public static final short SHORT_MAX = Short.MAX_VALUE;
-	public static final short SHORT_MIN = Short.MIN_VALUE;
-	public static final int INT_MAX = Integer.MAX_VALUE;
-	public static final int INT_MIN = Integer.MIN_VALUE;
-	public static final long LONG_MAX = Long.MAX_VALUE;
-	public static final long LONG_MIN = Long.MIN_VALUE;
-	public static final float FLOAT_MAX = Float.MAX_VALUE;
-	public static final float FLOAT_MIN = Float.MIN_VALUE;
-	public static final float FLOAT_MIN_NORM = Float.MIN_NORMAL;
-	public static final double DOUBLE_MAX = Double.MAX_VALUE;
-	public static final double DOUBLE_MIN = Double.MIN_VALUE;
-	public static final double DOUBLE_MIN_NORM = Double.MIN_NORMAL;
-	public static final double NAN_DOUBLE = Double.NaN;
-	public static final float NAN_FLOAT = Float.NaN;
-	public static final double NEG_INF_DOUBLE = Double.NEGATIVE_INFINITY;
-	public static final float NEG_INF_FLOAT = Float.NEGATIVE_INFINITY;
-	public static final double POS_INF_DOUBLE = Double.POSITIVE_INFINITY;
-	public static final float POS_INF_FLOAT = Float.POSITIVE_INFINITY;
-	public static final double NAN = NAN_DOUBLE;
-	public static final double POS_INF = POS_INF_DOUBLE;
-	public static final double NEG_INF = NEG_INF_DOUBLE;
+	/**
+	 * The internal {@link Random} object used by the non-static RNG methods
+	 */
 	protected final Random rand;
+	/**
+	 * Force a number to be between an upper and lower bound
+	 * 
+	 * @param value
+	 *            - the value to restrict
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return the <code>value</code> param, iff it is above <code>min</code> and below <code>max</code>. If it's less than <code>min</code>, returns <code>min</code>. If it's above <code>max</code>, returns <code>max</code>.
+	 */
 	public static final double bound(double value, double min, double max) {
 		if (max > min) {
 			double i = min;
@@ -46,6 +42,17 @@ public class MathUtil {
 		}
 		return value;
 	}
+	/**
+	 * Force a number to be between an upper and lower bound
+	 * 
+	 * @param value
+	 *            - the value to restrict
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return the <code>value</code> param, iff it is above <code>min</code> and below <code>max</code>. If it's less than <code>min</code>, returns <code>min</code>. If it's above <code>max</code>, returns <code>max</code>.
+	 */
 	public static final float bound(float value, float min, float max) {
 		if (max > min) {
 			float i = min;
@@ -63,6 +70,17 @@ public class MathUtil {
 		}
 		return value;
 	}
+	/**
+	 * Force a number to be between an upper and lower bound
+	 * 
+	 * @param value
+	 *            - the value to restrict
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return the <code>value</code> param, iff it is above <code>min</code> and below <code>max</code>. If it's less than <code>min</code>, returns <code>min</code>. If it's above <code>max</code>, returns <code>max</code>.
+	 */
 	public static final int bound(int value, int min, int max) {
 		if (max > min) {
 			int i = min;
@@ -80,6 +98,17 @@ public class MathUtil {
 		}
 		return value;
 	}
+	/**
+	 * Force a number to be between an upper and lower bound
+	 * 
+	 * @param value
+	 *            - the value to restrict
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return the <code>value</code> param, iff it is above <code>min</code> and below <code>max</code>. If it's less than <code>min</code>, returns <code>min</code>. If it's above <code>max</code>, returns <code>max</code>.
+	 */
 	public static final long bound(long value, long min, long max) {
 		if (max > min) {
 			long i = min;
@@ -97,6 +126,17 @@ public class MathUtil {
 		}
 		return value;
 	}
+	/**
+	 * Force a number to be between an upper and lower bound
+	 * 
+	 * @param value
+	 *            - the value to restrict
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return the <code>value</code> param, iff it is above <code>min</code> and below <code>max</code>. If it's less than <code>min</code>, returns <code>min</code>. If it's above <code>max</code>, returns <code>max</code>.
+	 */
 	public static final short bound(short value, short min, short max) {
 		if (max > min) {
 			short i = min;
@@ -116,16 +156,38 @@ public class MathUtil {
 	}
 	/**
 	 * This method should never be used. It's just a reference to
-	 * XKCD 221.
+	 * <a href="http://www.xkcd.com/221">XKCD 221</a>.
 	 * 
 	 * @return 4
 	 */
 	public static final int getRandomNumber() {
 		return 4;
 	}
+	/**
+	 * Generate a random byte
+	 * 
+	 * @param r
+	 *            - the {@link Random} object to use
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random byte between <code>min</code> and <code>max</code>
+	 */
 	public static final byte randByte(Random r, byte min, byte max) {
 		return (byte) randInt(r, min, max);
 	}
+	/**
+	 * Generate a random double
+	 * 
+	 * @param r
+	 *            - the {@link Random} object to use
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random double between <code>min</code> and <code>max</code>
+	 */
 	public static final double randDouble(Random r, double min, double max) {
 		if (max < min) {
 			double t = min;
@@ -137,6 +199,17 @@ public class MathUtil {
 		}
 		return (min + ((max - min) * r.nextDouble()));
 	}
+	/**
+	 * Generate a random float
+	 * 
+	 * @param r
+	 *            - the {@link Random} object to use
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random float between <code>min</code> and <code>max</code>
+	 */
 	public static final float randFloat(Random r, float min, float max) {
 		if (max < min) {
 			float t = min;
@@ -148,6 +221,17 @@ public class MathUtil {
 		}
 		return (min + ((max - min) * r.nextFloat()));
 	}
+	/**
+	 * Generate a random int
+	 * 
+	 * @param r
+	 *            - the {@link Random} object to use
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random int between <code>min</code> and <code>max</code>
+	 */
 	public static final int randInt(Random r, int min, int max) {
 		if (max < min) {
 			int t = min;
@@ -159,6 +243,17 @@ public class MathUtil {
 		}
 		return r.nextInt(max - min) + min;
 	}
+	/**
+	 * Generate a random long
+	 * 
+	 * @param r
+	 *            - the {@link Random} object to use
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random long between <code>min</code> and <code>max</code>
+	 */
 	public static final long randLong(Random r, long min, long max) {
 		if (max < min) {
 			long t = min;
@@ -170,34 +265,114 @@ public class MathUtil {
 		}
 		return (min + (long) (r.nextDouble() * (max - min)));
 	}
+	/**
+	 * Generate a random short
+	 * 
+	 * @param r
+	 *            - the {@link Random} object to use
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random short between <code>min</code> and <code>max</code>
+	 */
 	public static final short randShort(Random r, short min, short max) {
 		return (short) randInt(r, min, max);
 	}
+	/**
+	 * Generate a new MathUtil object with a new {@link Random} object as the RNG
+	 */
 	public MathUtil() {
-		rand = new Random();
+		this.rand = new Random();
 	}
+	/**
+	 * Generate a new MathUtil object with a new {@link Random} object as the RNG, using the given seed
+	 * 
+	 * @param seed
+	 *            - the seed for the RNG
+	 */
 	public MathUtil(long seed) {
-		rand = new Random(seed);
+		this.rand = new Random(seed);
 	}
+	/**
+	 * Generate a new MathUtil object with the given RNG
+	 * 
+	 * @param init
+	 *            - the RNG to use
+	 */
 	public MathUtil(Random init) {
-		rand = init;
+		this.rand = init;
 	}
+	/**
+	 * Generate a random number using the internal RNG
+	 * 
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random byte
+	 */
 	public final byte randByte(byte min, byte max) {
-		return randByte(rand, min, max);
+		return randByte(this.rand, min, max);
 	}
+	/**
+	 * Generate a random number using the internal RNG
+	 * 
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random double
+	 */
 	public final double randDouble(double min, double max) {
-		return randDouble(rand, min, max);
+		return randDouble(this.rand, min, max);
 	}
+	/**
+	 * Generate a random number using the internal RNG
+	 * 
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random float
+	 */
 	public final float randFloat(float min, float max) {
-		return randFloat(rand, min, max);
+		return randFloat(this.rand, min, max);
 	}
+	/**
+	 * Generate a random number using the internal RNG
+	 * 
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random float
+	 */
 	public final int randInt(int min, int max) {
-		return randInt(rand, min, max);
+		return randInt(this.rand, min, max);
 	}
+	/**
+	 * Generate a random number using the internal RNG
+	 * 
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random long
+	 */
 	public final long randLong(long min, long max) {
-		return randLong(rand, min, max);
+		return randLong(this.rand, min, max);
 	}
+	/**
+	 * Generate a random number using the internal RNG
+	 * 
+	 * @param min
+	 *            - the minimum value to return
+	 * @param max
+	 *            - the maximum value to return
+	 * @return a random short
+	 */
 	public final short randShort(short min, short max) {
-		return randShort(rand, min, max);
+		return randShort(this.rand, min, max);
 	}
 }

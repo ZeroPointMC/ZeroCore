@@ -17,7 +17,7 @@ public class DefaultPreParser implements ICommandPreParser {
 	public boolean canParse(String command) {
 		return false;
 	}
-	public String parse(String command, Shell shell) {
+	public String preparse(String command, Shell shell) {
 		return command;
 	}
 }
