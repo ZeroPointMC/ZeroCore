@@ -48,6 +48,7 @@ public class ZeroCore {
 	/**
 	 * Don't use this
 	 */
+	// This is here so Eclipse doesn't whine about the undocumented params
 	@SuppressWarnings("javadoc")
 	public static final void explode(String message) {
 		throw new EverythingWentWrongError(message);
@@ -55,6 +56,7 @@ public class ZeroCore {
 	/**
 	 * Do not touch
 	 */
+	// This is here so Eclipse doesn't whine about the undocumented params
 	@SuppressWarnings("javadoc")
 	public static final void explode(String message, Throwable cause) {
 		throw new EverythingWentWrongError(message, cause);
@@ -62,12 +64,13 @@ public class ZeroCore {
 	/**
 	 * This is a bad idea
 	 */
+	// This is here so Eclipse doesn't whine about the undocumented params
 	@SuppressWarnings("javadoc")
 	public static final void explode(Throwable cause) {
 		throw new EverythingWentWrongError(cause);
 	}
 	/**
-	 * @return a random error
+	 * @return a random error message
 	 */
 	public static final String getRandomErrorMessage() {
 		return getRandomErrorMessage(new Random());

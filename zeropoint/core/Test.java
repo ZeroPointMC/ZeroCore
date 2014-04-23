@@ -28,6 +28,8 @@ import zeropoint.core.shell.SingleParserShell;
 import zeropoint.core.shell.parser.ShellTestParser;
 import zeropoint.core.string.StringUtil;
 import zeropoint.core.string.hash.SHA;
+import zeropoint.core.struct.Wheel;
+import zeropoint.core.struct.WheelIterator;
 
 
 /**
@@ -45,7 +47,7 @@ public final class Test {
 	public static final String multilineFile = "./ZeroCore.dat";
 	public static final String postReverse = "tnemirepxe";
 	public static final String preReverse = "experiment";
-	public static final int testCount = 14;
+	public static final int testCount = 18;
 	public static final String testFile = "./ZeroCore.tmp";
 	public static final String testText = "Success";
 	public static final String toHash = "pony";
@@ -75,7 +77,7 @@ public final class Test {
 		footer();
 	}
 	private static void footer() {
-		System.out.println("\n\nZeroCore V" + VERSION + " Self Test complete - " + errCount + "/" + testCount + " tests failed.");
+		System.out.println("\nZeroCore V" + VERSION + " Self Test complete - " + errCount + "/" + testCount + " tests failed.");
 		if (errCount > 0) {
 			System.err.println("Please copy this error log and send it to Zero Point at the following email address:");
 			System.err.println("zeropointmcdev@gmail.com");
@@ -86,7 +88,7 @@ public final class Test {
 		}
 	}
 	private static void header() {
-		System.out.println("ZeroCore V" + VERSION + " Self Test\n\n");
+		System.out.println("ZeroCore V" + VERSION + " Self Test\n");
 		if (testLogging) {
 			LOGGER.severe("Testing ZeroCore severe level message logging");
 			LOGGER.warning("Testing ZeroCore warning level message logging");
@@ -95,6 +97,7 @@ public final class Test {
 			LOGGER.fine("Testing ZeroCore fine level message logging");
 			LOGGER.finer("Testing ZeroCore finer level message logging");
 			LOGGER.finest("Testing ZeroCore finest level message logging");
+			System.err.println("");
 		}
 	}
 	private static void init(String[] args) {
@@ -156,12 +159,76 @@ public final class Test {
 		test_LockableProperties_clone();
 		test_Localization_clone();
 		test_Version();
+		test_Wheel();
+		test_WheelIterator();
 		try {
 			ZeroCore.explode();
+			LOGGER.severe("Failed to trigger error!");
+			errCount++ ;
 		}
 		catch (Error e) {
 			LOGGER.info("Successfully exploded!");
 		}
+	}
+	private static void test_WheelIterator() {
+		Wheel<Integer> wheel = new Wheel<Integer>();
+		wheel.addAll(new Integer[] {
+			1,
+			2,
+			3,
+			4
+		});
+		WheelIterator<Integer> iter = (WheelIterator<Integer>) wheel.iterator();
+		if (iter.next() == 1) {
+			if (iter.next() == 2) {
+				if (iter.next() == 3) {
+					if (iter.next() == 4) {
+						if ( !iter.hasNext()) {
+							LOGGER.info("WheelIterator is functional!");
+							return;
+						}
+					}
+				}
+			}
+		}
+		errCount++ ;
+		LOGGER.warning("WheelIterator didn't work!");
+		iter = (WheelIterator<Integer>) wheel.iterator();
+		StringBuffer buf = new StringBuffer();
+		buf.append(iter.next());
+		while (iter.hasNext()) {
+			buf.append(", " + iter.next());
+		}
+		LOGGER.fine(buf.toString());
+	}
+	private static void test_Wheel() {
+		Wheel<Integer> wheel = new Wheel<Integer>();
+		wheel.addAll(new Integer[] {
+			1,
+			2,
+			3,
+			4
+		});
+		if (wheel.read() == 1) {
+			if (wheel.read() == 2) {
+				if (wheel.read() == 3) {
+					if (wheel.read() == 4) {
+						if (wheel.read() == 1) {
+							LOGGER.info("Wheel is functional!");
+							return;
+						}
+					}
+				}
+			}
+		}
+		LOGGER.warning("Wheel didn't work!");
+		wheel.reset();
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < 8; i++ ) {
+			buf.append(wheel.read() + ", ");
+		}
+		buf.append(wheel.read());
+		LOGGER.fine(buf.toString());
 	}
 	private static void test_Version() {
 		Version a = new Version(1, 0, 0);

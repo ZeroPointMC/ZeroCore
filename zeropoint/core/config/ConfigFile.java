@@ -23,7 +23,7 @@ import zeropoint.core.io.file.FileBase;
  * 
  * @author Zero Point
  */
-// TODO: write Javadoc
+
 public class ConfigFile {
 	/**
 	 * The configuration properties

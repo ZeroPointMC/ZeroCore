@@ -1,6 +1,7 @@
 package zeropoint.core.logger;
 
 
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -54,5 +55,16 @@ public class LoggerConfig {
 			l.setLevel(lvl);
 		}
 		return l;
+	}
+	/**
+	 * Throws together a logger configured the way I always set them up. Convenience method.
+	 * 
+	 * @param loggerName
+	 *            - the name of the logger, passed to Logger.gerLogger(...)
+	 * @return a Logger ready for use
+	 * @author Zero Point
+	 */
+	public static Logger generate(String loggerName) {
+		return config(Logger.getLogger(loggerName), 0, new LoggingFormatter(LoggingFormatter.FLAG_TIME_STANDARD, true), Level.ALL, new ConsoleHandler());
 	}
 }

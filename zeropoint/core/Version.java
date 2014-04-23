@@ -14,6 +14,10 @@ import zeropoint.core.exception.InvalidVersionException;
  */
 public class Version implements Comparable<Version> {
 	/**
+	 * The regex used to extract the version information
+	 */
+	public static final Pattern REGEX = Pattern.compile("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<pre>(?:-[a-z0-9-]+(?:\\.[a-z0-9-]+)?)?)(?<meta>(?:\\+[a-z0-9-]+(?:\\.[a-z0-9-]+)?)?)", Pattern.CASE_INSENSITIVE);
+	/**
 	 * The major version of the Semantic Version string this object represents
 	 */
 	public final int major;
@@ -40,11 +44,10 @@ public class Version implements Comparable<Version> {
 	 *            - the Semantic Version string this object should represent
 	 */
 	public Version(String ver) {
-		Pattern pattern = Pattern.compile("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<pre>(?:-[a-z0-9-]+(?:\\.[a-z0-9-]+)?)?)(?<meta>(?:\\+[a-z0-9-]+(?:\\.[a-z0-9-]+)?)?)", Pattern.CASE_INSENSITIVE);
-		Matcher matcher = pattern.matcher(ver);
-		if ( !matcher.matches()) {
+		if ( !isValid(ver)) {
 			throw new InvalidVersionException().setMessage(ver + " is not a valid version string!");
 		}
+		Matcher matcher = REGEX.matcher(ver);
 		this.major = Integer.parseInt(matcher.group("major"));
 		this.minor = Integer.parseInt(matcher.group("minor"));
 		this.patch = Integer.parseInt(matcher.group("patch"));
@@ -214,5 +217,15 @@ public class Version implements Comparable<Version> {
 		}
 		return buf.toString();
 	}
-	// TODO: convenience comparison
+	/**
+	 * Test whether a string represents a valid Semantic Version
+	 * 
+	 * @param test
+	 *            - the string to test
+	 * @return <code>true</code> if the string is valid, <code>false</code> otherwise
+	 */
+	public static boolean isValid(String test) {
+		Matcher matcher = REGEX.matcher(test);
+		return matcher.matches();
+	}
 }

@@ -8,7 +8,7 @@ import java.io.LineNumberReader;
 import java.io.Reader;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +36,10 @@ import zeropoint.core.shell.parser.ICommandPreParser;
  * @author Zero Point
  */
 public abstract class Shell implements Runnable {
+	/**
+	 * The iterator for the command stack
+	 */
+	protected ListIterator<String> iter = null;
 	/**
 	 * Set in source code to true to enable verbose test
 	 * logging output.
@@ -139,7 +143,12 @@ public abstract class Shell implements Runnable {
 	 * @return The current Shell object
 	 */
 	public Shell addCommandToStack(String cmd) {
-		this.stack.add(0, cmd);
+		if (this.iter != null) {
+			this.iter.add(cmd);
+		}
+		else {
+			this.stack.add(0, cmd);
+		}
 		return this;
 	}
 	/**
@@ -408,13 +417,16 @@ public abstract class Shell implements Runnable {
 		if (doTestLogging) {
 			this.LOGGER.finest("Processing command stack");
 		}
-		Iterator<String> iter = this.stack.iterator();
+		this.iter = this.stack.listIterator();
 		MAINLOOP: while (true) {
-			if (Thread.interrupted() || !iter.hasNext()) {
+			if ( !this.iter.hasNext()) {
+				this.iter = this.stack.listIterator();
+			}
+			if (Thread.interrupted() || !this.iter.hasNext()) {
 				break MAINLOOP;
 			}
-			String line = iter.next();
-			iter.remove();
+			String line = this.iter.next();
+			this.iter.remove();
 			if (line == null) {
 				continue MAINLOOP;
 			}
