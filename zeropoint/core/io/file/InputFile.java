@@ -3,12 +3,16 @@ package zeropoint.core.io.file;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import zeropoint.core.io.IInputStream;
 
 
 /**
@@ -17,7 +21,11 @@ import java.util.List;
  * @see FileBase
  * @author Zero Point
  */
-public class InputFile extends FileBase {
+public class InputFile extends FileBase implements IInputStream {
+	/**
+	 * The {@link FileInputStream} that reads from the file
+	 */
+	protected InputStream reader = null;
 	/**
 	 * Create a new InputFile pointing to the given path
 	 * 
@@ -26,6 +34,12 @@ public class InputFile extends FileBase {
 	 */
 	public InputFile(String fpath) {
 		super(fpath);
+		try {
+			this.create();
+			this.reader = new FileInputStream(fpath);
+		}
+		catch (FileNotFoundException e) {}
+		catch (IOException e) {}
 	}
 	/**
 	 * Read the entire contents of the file
@@ -71,6 +85,15 @@ public class InputFile extends FileBase {
 		catch (IOException e) {
 			this.isLocked = false;
 			throw e;
+		}
+	}
+	@Override
+	public Integer read() {
+		try {
+			return this.reader.read();
+		}
+		catch (IOException e) {
+			return -1;
 		}
 	}
 }

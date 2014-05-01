@@ -36,15 +36,19 @@ public class StringBufferWriter extends Writer implements Cloneable, IBuffer {
 	public StringBufferWriter(Object initLock) {
 		super(initLock);
 	}
+	@Override
 	public IBuffer setBuffer(CharSequence buf) {
 		return this;
 	}
+	@Override
 	public String getBuffer() {
 		return this.buffer.toString();
 	}
+	@Override
 	public IBuffer appendToBuffer(CharSequence buf) {
 		return this;
 	}
+	@Override
 	public IBuffer prependToBuffer(CharSequence buf) {
 		return this;
 	}
@@ -58,6 +62,6 @@ public class StringBufferWriter extends Writer implements Cloneable, IBuffer {
 	}
 	@Override
 	public String toString() {
-		return getBuffer();
+		return this.getBuffer();
 	}
 }

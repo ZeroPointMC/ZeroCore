@@ -10,12 +10,15 @@ import zeropoint.core.shell.Shell;
  * @author Zero Point
  */
 public class DefaultPostParser implements ICommandParser {
+	@Override
 	public String name() {
 		return "DefaultPostParser";
 	}
+	@Override
 	public boolean canParse(String command) {
 		return true;
 	}
+	@Override
 	public void parse(String command, Shell shell) {
 		command = command.toLowerCase();
 		if (command.equals("quit") || command.equals("exit")) {

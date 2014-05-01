@@ -34,15 +34,19 @@ public class StringBufferOutputStream extends OutputStream implements Cloneable,
 	public StringBufferOutputStream(String init) {
 		this.buffer = new StringBuffer(init);
 	}
+	@Override
 	public IBuffer setBuffer(CharSequence buf) {
 		return this;
 	}
+	@Override
 	public String getBuffer() {
 		return this.buffer.toString();
 	}
+	@Override
 	public IBuffer appendToBuffer(CharSequence buf) {
 		return this;
 	}
+	@Override
 	public IBuffer prependToBuffer(CharSequence buf) {
 		return this;
 	}
@@ -52,6 +56,6 @@ public class StringBufferOutputStream extends OutputStream implements Cloneable,
 	}
 	@Override
 	public String toString() {
-		return getBuffer();
+		return this.getBuffer();
 	}
 }

@@ -39,29 +39,31 @@ public class LockableProperties extends Properties implements ILockable {
 		clone.isLocked = false;
 		return clone;
 	}
+	@Override
 	public void lock() {
 		this.isLocked = true;
 	}
+	@Override
 	public boolean locked() {
 		return this.isLocked;
 	}
 	@Override
 	public synchronized void load(InputStream inStream) throws IOException {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException().setMessage(ERRMSG);
 		}
 		super.load(inStream);
 	}
 	@Override
 	public synchronized void load(Reader reader) throws IOException {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException().setMessage(ERRMSG);
 		}
 		super.load(reader);
 	}
 	@Override
 	public synchronized void loadFromXML(InputStream in) throws InvalidPropertiesFormatException, IOException {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException().setMessage(ERRMSG);
 		}
 		super.loadFromXML(in);
@@ -73,7 +75,7 @@ public class LockableProperties extends Properties implements ILockable {
 	}
 	@Override
 	public synchronized Object setProperty(String key, String value) {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException().setMessage(ERRMSG);
 		}
 		return super.setProperty(key, value);

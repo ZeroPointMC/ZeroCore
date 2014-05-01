@@ -42,7 +42,7 @@ public class OutputFile extends FileBase implements Closeable, Flushable {
 	 *            - <code>true</code> to append, <code>false</code> to overwrite
 	 */
 	public void setAppend(boolean append) {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException();
 		}
 		this.shouldAppend = append;
@@ -63,15 +63,15 @@ public class OutputFile extends FileBase implements Closeable, Flushable {
 	@SuppressWarnings("deprecation")
 	public boolean open(boolean append) {
 		if (this.stream == null) {
-			reloadObjectFile();
-			lock();
+			this.reloadObjectFile();
+			this.lock();
 			try {
-				this.stream = new PrintStream(new FileOutputStream(path(), append));
+				this.stream = new PrintStream(new FileOutputStream(this.path(), append));
 			}
 			catch (FileNotFoundException e) {
 				try {
-					create();
-					open();
+					this.create();
+					this.open();
 				}
 				catch (IOException e1) {
 					this.isLocked = false;
@@ -86,7 +86,7 @@ public class OutputFile extends FileBase implements Closeable, Flushable {
 	 * @return <code>true</code> on success, <code>false</code> on failure
 	 */
 	public boolean open() {
-		return open(this.shouldAppend);
+		return this.open(this.shouldAppend);
 	}
 	/**
 	 * Print the <code>String</code> representation of the given object to the file
@@ -95,7 +95,7 @@ public class OutputFile extends FileBase implements Closeable, Flushable {
 	 *            - the object to stringify and print
 	 */
 	public void print(Object o) {
-		open();
+		this.open();
 		this.stream.print(o);
 	}
 	/**
@@ -105,7 +105,7 @@ public class OutputFile extends FileBase implements Closeable, Flushable {
 	 *            - the object to stringify and print
 	 */
 	public void println(Object o) {
-		open();
+		this.open();
 		this.stream.println(o);
 	}
 	/**
@@ -117,17 +117,19 @@ public class OutputFile extends FileBase implements Closeable, Flushable {
 	 *            - the objects to use for formatting
 	 */
 	public void format(String fmt, Object... args) {
-		open();
+		this.open();
 		this.stream.format(fmt, args);
 	}
+	@Override
 	public void flush() {
-		open();
+		this.open();
 		this.stream.flush();
 	}
+	@Override
 	@SuppressWarnings("deprecation")
 	public void close() {
-		open();
-		flush();
+		this.open();
+		this.flush();
 		this.stream.close();
 		this.stream = null;
 		this.isLocked = false;
@@ -139,7 +141,7 @@ public class OutputFile extends FileBase implements Closeable, Flushable {
 	 *            - the ASCII character code to write
 	 */
 	public void write(int b) {
-		open();
+		this.open();
 		this.stream.write(b);
 	}
 	/**
@@ -151,7 +153,7 @@ public class OutputFile extends FileBase implements Closeable, Flushable {
 	 *             if the file cannot be written to
 	 */
 	public void write(byte[] b) throws IOException {
-		open();
+		this.open();
 		this.stream.write(b);
 	}
 	/**
@@ -167,7 +169,7 @@ public class OutputFile extends FileBase implements Closeable, Flushable {
 	 *             if the file cannot be written to
 	 */
 	public void write(byte[] arg0, int arg1, int arg2) throws IOException {
-		open();
+		this.open();
 		this.stream.write(arg0, arg1, arg2);
 	}
 }

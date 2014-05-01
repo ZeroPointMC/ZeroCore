@@ -98,7 +98,7 @@ public abstract class Shell implements Runnable {
 	 * Construct a new Shell object, using the default InputStream.
 	 */
 	public Shell() {
-		setInput(DEFAULT_INPUTSTREAM);
+		this.setInput(DEFAULT_INPUTSTREAM);
 	}
 	private static Logger createLogger() {
 		Logger log = LoggerConfig.config(Logger.getLogger("Shell"), 0, new LoggingFormatter(LoggingFormatter.FLAG_TIME_FULL), Level.ALL, new ConsoleHandler());
@@ -111,7 +111,7 @@ public abstract class Shell implements Runnable {
 	 *            - the InputStream to read commands from
 	 */
 	public Shell(InputStream init) {
-		setInput(init);
+		this.setInput(init);
 	}
 	/**
 	 * Construct a new Shell object, using the given Reader
@@ -120,7 +120,7 @@ public abstract class Shell implements Runnable {
 	 *            - the Reader to read commands from
 	 */
 	public Shell(Reader init) {
-		setInput(init);
+		this.setInput(init);
 	}
 	/**
 	 * Adds a string to the bottom of the command stack,
@@ -216,6 +216,7 @@ public abstract class Shell implements Runnable {
 	 * @throws InvalidSyntaxException
 	 *             if the command cannot be parsed
 	 */
+	@Override
 	public void run() throws InvalidSyntaxException {
 		this.commandReader.setLineNumber(1);
 		this.shouldTerminate = false;
@@ -223,7 +224,7 @@ public abstract class Shell implements Runnable {
 			if (Thread.interrupted()) {
 				return;
 			}
-			if (processCommandStack()) {
+			if (this.processCommandStack()) {
 				return;
 			}
 			if (Thread.interrupted()) {
@@ -237,7 +238,7 @@ public abstract class Shell implements Runnable {
 				if (doTestLogging) {
 					this.LOGGER.finest("Adding command to stack: " + nextCom);
 				}
-				addCommandToBottomOfStack(nextCom);
+				this.addCommandToBottomOfStack(nextCom);
 			}
 			catch (ClosedByInterruptException e) {
 				this.LOGGER.log(Level.SEVERE, "Shell thread interrupted", e);
@@ -319,7 +320,7 @@ public abstract class Shell implements Runnable {
 	 */
 	public boolean verifyAll(String... commands) {
 		for (String cmd : commands) {
-			if ( !verifyCommand(cmd)) {
+			if ( !this.verifyCommand(cmd)) {
 				return false;
 			}
 		}
@@ -336,7 +337,7 @@ public abstract class Shell implements Runnable {
 	 */
 	public boolean verifyAny(String... commands) {
 		for (String cmd : commands) {
-			if (verifyCommand(cmd)) {
+			if (this.verifyCommand(cmd)) {
 				return true;
 			}
 		}
@@ -369,7 +370,7 @@ public abstract class Shell implements Runnable {
 	 */
 	@Deprecated
 	protected final void setInput() {
-		setInput(DEFAULT_INPUTSTREAM);
+		this.setInput(DEFAULT_INPUTSTREAM);
 	}
 	/**
 	 * Set the command stream to the given InputStream
@@ -378,7 +379,7 @@ public abstract class Shell implements Runnable {
 	 *            - the {@link InputStream} to read commands from
 	 */
 	protected final void setInput(InputStream stream) {
-		setInput(new InputStreamReader(stream));
+		this.setInput(new InputStreamReader(stream));
 	}
 	/**
 	 * Set the command stream to the given Reader
@@ -462,7 +463,7 @@ public abstract class Shell implements Runnable {
 			if (doTestLogging) {
 				this.LOGGER.finest("Processing command: " + line);
 			}
-			processCommand(line);
+			this.processCommand(line);
 			if ((this.postParser != null) && this.postParser.canParse(line)) {
 				this.postParser.parse(line, this);
 			}
@@ -503,7 +504,7 @@ public abstract class Shell implements Runnable {
 	 *         <tt>false</tt> otherwise.
 	 */
 	public final boolean isSingleParserShell() {
-		return getShellType().equals(ShellType.SINGLEPARSER);
+		return this.getShellType().equals(ShellType.SINGLEPARSER);
 	}
 	/**
 	 * Convenience method for determining if this shell uses more
@@ -514,7 +515,7 @@ public abstract class Shell implements Runnable {
 	 *         <tt>false</tt> otherwise.
 	 */
 	public final boolean isMultiParserShell() {
-		return getShellType().equals(ShellType.MULTIPARSER);
+		return this.getShellType().equals(ShellType.MULTIPARSER);
 	}
 	/**
 	 * Convenience method for determining if this shell is an
@@ -525,6 +526,6 @@ public abstract class Shell implements Runnable {
 	 *         <tt>false</tt> otherwise.
 	 */
 	public final boolean isUnknownShellType() {
-		return getShellType().equals(ShellType.UNKNOWN);
+		return this.getShellType().equals(ShellType.UNKNOWN);
 	}
 }

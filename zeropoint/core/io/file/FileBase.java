@@ -52,12 +52,12 @@ public class FileBase implements ILockable {
 	 * Create a blank FileBase object
 	 */
 	public FileBase() {
-		folder("");
-		basename("");
-		file("");
-		extension("");
-		path("");
-		reloadObjectFile();
+		this.folder("");
+		this.basename("");
+		this.file("");
+		this.extension("");
+		this.path("");
+		this.reloadObjectFile();
 	}
 	/**
 	 * Create a new FileBase object
@@ -67,18 +67,18 @@ public class FileBase implements ILockable {
 	 */
 	public FileBase(String filePath) {
 		File tmp = (new File(filePath)).toPath().normalize().toFile(); // Paranoia.
-		path(tmp.toPath().normalize().toString());
-		folder(tmp.getParent());
-		file(tmp.getName());
+		this.path(tmp.toPath().normalize().toString());
+		this.folder(tmp.getParent());
+		this.file(tmp.getName());
 		if (this.file.indexOf(".") != -1) {
-			basename(this.file.substring(0, this.file.lastIndexOf(".")));
-			extension(this.file.substring(this.file.lastIndexOf(".") + 1));
+			this.basename(this.file.substring(0, this.file.lastIndexOf(".")));
+			this.extension(this.file.substring(this.file.lastIndexOf(".") + 1));
 		}
 		else {
-			basename(this.file);
-			extension("");
+			this.basename(this.file);
+			this.extension("");
 		}
-		reloadObjectFile();
+		this.reloadObjectFile();
 	}
 	/**
 	 * Create a new FileBase object
@@ -87,18 +87,18 @@ public class FileBase implements ILockable {
 	 *            - the {@link File} this object should represent
 	 */
 	public FileBase(File file) {
-		path(file.toPath().normalize().toString());
-		folder(file.getParent());
-		file(file.getName());
+		this.path(file.toPath().normalize().toString());
+		this.folder(file.getParent());
+		this.file(file.getName());
 		if (this.file.indexOf(".") != -1) {
-			basename(this.file.substring(0, this.file.lastIndexOf(".")));
-			extension(this.file.substring(this.file.lastIndexOf(".") + 1));
+			this.basename(this.file.substring(0, this.file.lastIndexOf(".")));
+			this.extension(this.file.substring(this.file.lastIndexOf(".") + 1));
 		}
 		else {
-			basename(this.file);
-			extension("");
+			this.basename(this.file);
+			this.extension("");
 		}
-		reloadObjectFile();
+		this.reloadObjectFile();
 	}
 	/**
 	 * Create a new FileBase object
@@ -107,18 +107,18 @@ public class FileBase implements ILockable {
 	 *            - the {@link Path} this object should represent
 	 */
 	public FileBase(Path path) {
-		path(path.normalize().toString());
-		folder(path.toFile().getParent());
-		file(path.toFile().getName());
+		this.path(path.normalize().toString());
+		this.folder(path.toFile().getParent());
+		this.file(path.toFile().getName());
 		if (this.file.indexOf(".") != -1) {
-			basename(this.file.substring(0, this.file.lastIndexOf(".")));
-			extension(this.file.substring(this.file.lastIndexOf(".") + 1));
+			this.basename(this.file.substring(0, this.file.lastIndexOf(".")));
+			this.extension(this.file.substring(this.file.lastIndexOf(".") + 1));
 		}
 		else {
-			basename(this.file);
-			extension("");
+			this.basename(this.file);
+			this.extension("");
 		}
-		reloadObjectFile();
+		this.reloadObjectFile();
 	}
 	/**
 	 * Copy a FileBase object
@@ -127,25 +127,25 @@ public class FileBase implements ILockable {
 	 *            - the FileBase object to copy
 	 */
 	public FileBase(FileBase init) {
-		path(init.path());
-		folder(init.folder());
-		file(init.file());
-		basename(init.basename());
-		extension(init.extension());
-		reloadObjectFile();
+		this.path(init.path());
+		this.folder(init.folder());
+		this.file(init.file());
+		this.basename(init.basename());
+		this.extension(init.extension());
+		this.reloadObjectFile();
 	}
 	/**
 	 * Reload the {@link File} object stored internally
 	 */
 	protected void reloadObjectFile() {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException();
 		}
-		this.fobj = new File(path());
+		this.fobj = new File(this.path());
 	}
 	@Override
 	public String toString() {
-		return path();
+		return this.path();
 	}
 	@Override
 	public int hashCode() {
@@ -227,7 +227,7 @@ public class FileBase implements ILockable {
 	 */
 	@Deprecated
 	protected void folder(String newFolder) {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException();
 		}
 		if (newFolder == null) {
@@ -240,7 +240,7 @@ public class FileBase implements ILockable {
 		catch (IOException e) {
 			this.folder = tmp.getAbsolutePath();
 		}
-		reloadObjectFile();
+		this.reloadObjectFile();
 	}
 	/**
 	 * @return the file's basename
@@ -257,11 +257,11 @@ public class FileBase implements ILockable {
 	 */
 	@Deprecated
 	protected void basename(String newBasename) {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException();
 		}
 		this.basename = newBasename;
-		reloadObjectFile();
+		this.reloadObjectFile();
 	}
 	/**
 	 * @return the file name
@@ -278,11 +278,11 @@ public class FileBase implements ILockable {
 	 */
 	@Deprecated
 	protected void file(String newFile) {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException();
 		}
 		this.file = newFile;
-		reloadObjectFile();
+		this.reloadObjectFile();
 	}
 	/**
 	 * @return the file extension
@@ -299,11 +299,11 @@ public class FileBase implements ILockable {
 	 */
 	@Deprecated
 	protected void extension(String newExtension) {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException();
 		}
 		this.extension = newExtension;
-		reloadObjectFile();
+		this.reloadObjectFile();
 	}
 	/**
 	 * Get the path this object represents
@@ -322,11 +322,11 @@ public class FileBase implements ILockable {
 	 */
 	@Deprecated
 	protected void path(String newPath) {
-		if (locked()) {
+		if (this.locked()) {
 			throw new LockedException();
 		}
 		this.path = (new File(newPath)).toPath().normalize().toString();
-		reloadObjectFile();
+		this.reloadObjectFile();
 	}
 	/**
 	 * Creates the file
@@ -381,9 +381,11 @@ public class FileBase implements ILockable {
 	public long size() {
 		return this.fobj.length();
 	}
+	@Override
 	public void lock() {
 		this.isLocked = true;
 	}
+	@Override
 	public boolean locked() {
 		return this.isLocked;
 	}

@@ -41,5 +41,6 @@ public interface IBuffer {
 	 * 
 	 * @return The internal buffer, as returned by getBuffer()
 	 */
+	@Override
 	String toString();
 }

@@ -62,7 +62,7 @@ public class Localization implements ILockable, Cloneable {
 	 *            - the file name
 	 */
 	public Localization(String file) {
-		loadProps(file);
+		this.loadProps(file);
 	}
 	/**
 	 * Load a .lang file with the given name (locale) from the given directory
@@ -73,7 +73,7 @@ public class Localization implements ILockable, Cloneable {
 	 *            - the basename of the file to load
 	 */
 	public Localization(String dir, String locale) {
-		loadProps(dir, locale);
+		this.loadProps(dir, locale);
 	}
 	/**
 	 * Load a .lang file in the ./locale/ directory
@@ -82,7 +82,7 @@ public class Localization implements ILockable, Cloneable {
 	 *            - the file basename to load
 	 */
 	public void loadProps(String file) {
-		loadProps("./locale", new FileBase(file).basename());
+		this.loadProps("./locale", new FileBase(file).basename());
 	}
 	/**
 	 * Load a .lang file in the given directory with the given locale as the basename
@@ -140,9 +140,11 @@ public class Localization implements ILockable, Cloneable {
 		}
 		return localized;
 	}
+	@Override
 	public boolean locked() {
 		return this.isLocked;
 	}
+	@Override
 	public void lock() {
 		this.isLocked = true;
 	}

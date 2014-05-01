@@ -108,6 +108,7 @@ public class Version implements Comparable<Version> {
 	public Version(int major, int minor, int patch, String pre, String meta) {
 		this(major + "." + minor + "." + patch + ((pre != null) && !pre.isEmpty() ? "-" + pre : "") + ((pre != null) && !pre.isEmpty() ? "+" + meta : ""));
 	}
+	@Override
 	public int compareTo(Version that) {
 		if (this.major > that.major) {
 			return 1;
@@ -155,7 +156,7 @@ public class Version implements Comparable<Version> {
 				}
 			}
 			else {
-				// Alphanumeric comparison
+				// ASCII comparison
 				char[] mchr = mpre[mi].toCharArray();
 				char[] ychr = ypre[mi].toCharArray();
 				for (int mci = 0; mci < mchr.length; mci++ ) {
@@ -181,6 +182,14 @@ public class Version implements Comparable<Version> {
 	@Override
 	public String toString() {
 		return toString(this.major, this.minor, this.patch, this.pre, this.build);
+	}
+	/**
+	 * Create a version string holding only the parts that are considered in version comparison
+	 * 
+	 * @return the significant parts of the version
+	 */
+	public String significantString() {
+		return toString(this.major, this.minor, this.patch, this.pre, null);
 	}
 	/**
 	 * Construct a Semantic Version string from the given parts
@@ -213,5 +222,54 @@ public class Version implements Comparable<Version> {
 			buf.append(meta);
 		}
 		return buf.toString();
+	}
+	/**
+	 * @param ver
+	 *            - the <code>Version</code> to stringify
+	 * @return the significant components of the given version
+	 */
+	public static String significantString(Version ver) {
+		return ver.significantString();
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + this.major;
+		result = (prime * result) + this.minor;
+		result = (prime * result) + this.patch;
+		result = (prime * result) + ((this.pre == null) ? 0 : this.pre.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if ( !(obj instanceof Version)) {
+			return false;
+		}
+		Version other = (Version) obj;
+		if (this.major != other.major) {
+			return false;
+		}
+		if (this.minor != other.minor) {
+			return false;
+		}
+		if (this.patch != other.patch) {
+			return false;
+		}
+		if (this.pre == null) {
+			if (other.pre != null) {
+				return false;
+			}
+		}
+		else if ( !this.pre.equals(other.pre)) {
+			return false;
+		}
+		return true;
 	}
 }

@@ -46,21 +46,25 @@ public class StringBufferInputStream extends InputStream implements IBuffer, Clo
 		super();
 		this.buffer = init;
 	}
+	@Override
 	public IBuffer setBuffer(CharSequence buf) {
 		if (buf != null) {
 			this.buffer = new StringBuffer(buf);
 		}
 		return this;
 	}
+	@Override
 	public String getBuffer() {
 		return this.buffer.toString();
 	}
+	@Override
 	public IBuffer appendToBuffer(CharSequence buf) {
 		if (buf != null) {
 			this.buffer.append(buf);
 		}
 		return this;
 	}
+	@Override
 	public IBuffer prependToBuffer(CharSequence buf) {
 		if (buf != null) {
 			this.buffer = new StringBuffer(buf).append(this.buffer);
@@ -81,6 +85,6 @@ public class StringBufferInputStream extends InputStream implements IBuffer, Clo
 	}
 	@Override
 	public String toString() {
-		return getBuffer();
+		return this.getBuffer();
 	}
 }

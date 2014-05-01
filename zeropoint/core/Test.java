@@ -1,7 +1,10 @@
 package zeropoint.core;
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +21,7 @@ import zeropoint.core.config.ConfigFile;
 import zeropoint.core.config.Localization;
 import zeropoint.core.config.LockableProperties;
 import zeropoint.core.date.Datetime;
+import zeropoint.core.io.IOStream;
 import zeropoint.core.io.file.FileBase;
 import zeropoint.core.io.file.InputFile;
 import zeropoint.core.io.file.OutputFile;
@@ -30,6 +34,7 @@ import zeropoint.core.string.StringUtil;
 import zeropoint.core.string.hash.SHA;
 import zeropoint.core.struct.Wheel;
 import zeropoint.core.struct.WheelIterator;
+import zeropoint.core.xml.XMLTag;
 
 
 /**
@@ -39,6 +44,7 @@ import zeropoint.core.struct.WheelIterator;
  */
 @SuppressWarnings("javadoc")
 public final class Test {
+	private static final String email = "zeropointmcdev@gmail.com";
 	public static final Version VERSION = new Version("1.0.0");
 	public static final Reader commandStream = new StringReader("run test\nexit");
 	public static final String configFile = "./ZeroCore.conf";
@@ -47,16 +53,24 @@ public final class Test {
 	public static final String multilineFile = "./ZeroCore.dat";
 	public static final String postReverse = "tnemirepxe";
 	public static final String preReverse = "experiment";
-	public static final int testCount = 18;
+	public static final int testCount = 20;
 	public static final String testFile = "./ZeroCore.tmp";
 	public static final String testText = "Success";
 	public static final String toHash = "pony";
 	private static Logger LOGGER;
 	private static int errCount = 0;
+	private static int warnCount = 0;
 	private static ArrayList<Handler> handlers = new ArrayList<Handler>();
 	private static boolean MODE_DEBUG = false;
 	private static boolean RUNNING_TESTS = false;
 	private static boolean testLogging = false;
+	private static final void warn(String msg) {
+		warn(msg, null);
+	}
+	private static final void warn(String msg, Throwable e) {
+		LOGGER.log(Level.WARNING, msg, e);
+		warnCount++ ;
+	}
 	public static void incrementErrorCount() {
 		errCount++ ;
 	}
@@ -77,21 +91,28 @@ public final class Test {
 		footer();
 	}
 	private static void footer() {
-		System.out.println("\nZeroCore V" + VERSION + " Self Test complete - " + errCount + "/" + testCount + " tests failed.");
+		System.out.println("\nZeroCore V" + VERSION + " Self Test complete");
+		System.out.println(errCount + "/" + testCount + " tests failed - " + warnCount + " warning" + (warnCount != 1 ? "s" : ""));
 		if (errCount > 0) {
 			System.err.println("Please copy this error log and send it to Zero Point at the following email address:");
-			System.err.println("zeropointmcdev@gmail.com");
+		}
+		else if (warnCount > 0) {
+			System.err.println("While nothing is broken, there are some things that should be checked.");
+			System.err.println("Please copy this log and send it to Zero Point at the following email address:");
 		}
 		else {
 			System.out.println("This copy of ZeroCore appears to working properly.\n");
 			System.out.println("Have a nice day!");
+		}
+		if ((errCount + warnCount) > 0) {
+			System.err.println(email);
 		}
 	}
 	private static void header() {
 		System.out.println("ZeroCore V" + VERSION + " Self Test\n");
 		if (testLogging) {
 			LOGGER.severe("Testing ZeroCore severe level message logging");
-			LOGGER.warning("Testing ZeroCore warning level message logging");
+			LOGGER.severe("Testing ZeroCore warning level message logging");
 			LOGGER.info("Testing ZeroCore info level message logging");
 			LOGGER.config("Testing ZeroCore config level message logging");
 			LOGGER.fine("Testing ZeroCore fine level message logging");
@@ -155,12 +176,14 @@ public final class Test {
 		test_StringUtil_reverse();
 		test_StringUtil_boolParse();
 		test_StringUtil_split();
-		test_StackTrace_trace();
+		test_StackTrace();
 		test_LockableProperties_clone();
 		test_Localization_clone();
 		test_Version();
 		test_Wheel();
 		test_WheelIterator();
+		test_IOStream();
+		test_XML();
 		try {
 			ZeroCore.explode();
 			LOGGER.severe("Failed to trigger error!");
@@ -168,6 +191,77 @@ public final class Test {
 		}
 		catch (Error e) {
 			LOGGER.info("Successfully exploded!");
+		}
+	}
+	private static void test_XML() {
+		XMLTag tag = new XMLTag("tag");
+		tag.attr("key", "val");
+		String res = tag.toString("test");
+		if (res.equals("<tag key=\"val\">test</tag>")) {
+			LOGGER.info("Dynamic XMLTag stringification is functional (" + res + ")");
+		}
+		else {
+			errCount++ ;
+			LOGGER.severe("XMLTag failed to stringify properly: " + res);
+			return;
+		}
+		XMLTag inner = new XMLTag("inner");
+		inner.attr("level", "1");
+		String xml = tag.toString(inner);
+		if (xml.equals("<tag key=\"val\"><inner level=\"1\" /></tag>")) {
+			LOGGER.info("Successfully stringified nested XMLTag objcts in dynamic mode (" + xml + ")");
+		}
+		else {
+			errCount++ ;
+			LOGGER.severe("Nested XMLTags failed to stringify in dynamic mode : " + xml);
+			return;
+		}
+		inner.cdata("testing");
+		inner.addInner(new XMLTag("one"));
+		XMLTag sub = new XMLTag("branch");
+		sub.attr("test", "test");
+		tag.addInner(sub);
+		tag.addInner(inner);
+		inner.addInner(sub);
+		if (tag.toString().equals("<tag key=\"val\"><branch test=\"test\" /><inner level=\"1\">testing<one /><branch test=\"test\" /></inner></tag>")) {
+			LOGGER.info("Static XMLTag stringification successful");
+		}
+		else {
+			errCount++ ;
+			LOGGER.severe("Static XMLTag stringification failed: " + tag.toString());
+			return;
+		}
+	}
+	private static void test_IOStream() {
+		IOStream io = new IOStream();
+		PrintStream out = new PrintStream(io.getWriteStream());
+		BufferedReader in = new BufferedReader(new InputStreamReader(io.getReadStream()));
+		out.println("line 1\nline 2");
+		out.print("line 3");
+		try {
+			if (in.readLine().equals("line 1")) {
+				if (in.readLine().equals("line 2")) {
+					if (in.readLine().equals("line 3")) {
+						try {
+							String line = in.readLine();
+							if (line == null) {
+								throw new IOException();
+							}
+							errCount++ ;
+							LOGGER.severe("IOStream malfunctioned! (Missing exception where expected, line " + line + ")");
+							return;
+						}
+						catch (IOException e) {
+							LOGGER.info("IOStream is working");
+							return;
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "IOStream malfunctioned!", e);
+			errCount++ ;
 		}
 	}
 	private static void test_WheelIterator() {
@@ -192,7 +286,7 @@ public final class Test {
 			}
 		}
 		errCount++ ;
-		LOGGER.warning("WheelIterator didn't work!");
+		LOGGER.severe("WheelIterator malfunctioned!");
 		iter = (WheelIterator<Integer>) wheel.iterator();
 		StringBuffer buf = new StringBuffer();
 		buf.append(iter.next());
@@ -221,7 +315,7 @@ public final class Test {
 				}
 			}
 		}
-		LOGGER.warning("Wheel didn't work!");
+		LOGGER.severe("Wheel malfunctioned!");
 		wheel.reset();
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < 8; i++ ) {
@@ -256,37 +350,37 @@ public final class Test {
 		Arrays.sort(vers);
 		if (a.compareTo(b) != -1) {
 			errCount++ ;
-			LOGGER.warning("Version comparison failed! " + a + " should be below " + b + "!");
+			LOGGER.severe("Version comparison failed! " + a + " should be below " + b + "!");
 			return;
 		}
 		if (a.compareTo(c) != 1) {
 			errCount++ ;
-			LOGGER.warning("Version comparison failed! " + a + " should be above " + c + "!");
+			LOGGER.severe("Version comparison failed! " + a + " should be above " + c + "!");
 			return;
 		}
 		if (c.compareTo(d) != -1) {
 			errCount++ ;
-			LOGGER.warning("Version comparison failed! " + c + " should be below " + d + "!");
+			LOGGER.severe("Version comparison failed! " + c + " should be below " + d + "!");
 			return;
 		}
 		if (d.compareTo(e) != 0) {
 			errCount++ ;
-			LOGGER.warning("Version comparison failed! " + d + " should equal " + e + "!");
+			LOGGER.severe("Version comparison failed! " + d + " should equal " + e + "!");
 			return;
 		}
 		if (f.compareTo(g) != -1) {
 			errCount++ ;
-			LOGGER.warning("Version comparison failed! " + f + " should be below " + g + "!");
+			LOGGER.severe("Version comparison failed! " + f + " should be below " + g + "!");
 			return;
 		}
 		if (h.compareTo(i) != -1) {
 			errCount++ ;
-			LOGGER.warning("Version comparison failed! " + h + " should be below " + i + "!");
+			LOGGER.severe("Version comparison failed! " + h + " should be below " + i + "!");
 			return;
 		}
 		if (g.compareTo(h) != 1) {
 			errCount++ ;
-			LOGGER.warning("Version comparison failed! " + g + " should be above " + h + "!");
+			LOGGER.severe("Version comparison failed! " + g + " should be above " + h + "!");
 			return;
 		}
 		LOGGER.info("Version comparisons succeeded");
@@ -307,7 +401,7 @@ public final class Test {
 			LOGGER.info("Successfully cloned Localization object");
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Could not clone Localization", e);
+			LOGGER.log(Level.SEVERE, "Could not clone Localization", e);
 		}
 	}
 	private static void test_LockableProperties_clone() {
@@ -324,7 +418,7 @@ public final class Test {
 			}
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Could not clone LockableProperties", e);
+			LOGGER.log(Level.SEVERE, "Could not clone LockableProperties", e);
 		}
 	}
 	private static void test_ConfigFile_read() {
@@ -335,12 +429,12 @@ public final class Test {
 				LOGGER.info("Read back from config file, contents match expected text");
 			}
 			else {
-				LOGGER.warning("Read back from config file, got unexpected result: " + val);
+				LOGGER.severe("Read back from config file, got unexpected result: " + val);
 				errCount++ ;
 			}
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to retrieve key 'core.version' from config file, listing all keys", e);
+			LOGGER.log(Level.SEVERE, "Unable to retrieve key 'core.version' from config file, listing all keys", e);
 			Iterator<String> iter = config.keys().iterator();
 			while (iter.hasNext()) {
 				System.out.println(iter.next());
@@ -356,7 +450,7 @@ public final class Test {
 			LOGGER.info("Wrote to config file '" + configFile + "'");
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to save config file '" + configFile + "'", e);
+			LOGGER.log(Level.SEVERE, "Unable to save config file '" + configFile + "'", e);
 			errCount++ ;
 		}
 		config.unloadProps();
@@ -379,12 +473,12 @@ public final class Test {
 				LOGGER.info("SHA256 hashing of '" + toHash + "' gives expected result of '" + result + "'");
 			}
 			else {
-				LOGGER.warning("SHA256 hashing of '" + toHash + "' gives unexpected result of '" + result + "'!");
+				LOGGER.severe("SHA256 hashing of '" + toHash + "' gives unexpected result of '" + result + "'!");
 				errCount++ ;
 			}
 		}
 		catch (NoSuchAlgorithmException e) {
-			LOGGER.log(Level.WARNING, "Unable to calculate SHA256 hash", e);
+			LOGGER.log(Level.SEVERE, "Unable to calculate SHA256 hash", e);
 			errCount++ ;
 		}
 	}
@@ -396,12 +490,12 @@ public final class Test {
 				LOGGER.info("Successfully read expected string from file '" + testFile + "' ('" + testText + "')");
 			}
 			else {
-				LOGGER.warning("Contents of " + testFile + " do not match expected data! Wanted '" + testText + "', got '" + text + "' instead!");
+				LOGGER.severe("Contents of " + testFile + " do not match expected data! Wanted '" + testText + "', got '" + text + "' instead!");
 				errCount++ ;
 			}
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to read contents of " + testFile, e);
+			LOGGER.log(Level.SEVERE, "Unable to read contents of " + testFile, e);
 			errCount++ ;
 		}
 	}
@@ -410,7 +504,7 @@ public final class Test {
 			String base = "{core.version}";
 			Localization local = new Localization(new ConfigFile(configFile));
 			if (local.localize(base).equals("[null]")) {
-				LOGGER.warning("Unable to properly localize string '{core.version}' using Localization");
+				LOGGER.severe("Unable to properly localize string '{core.version}' using Localization");
 				errCount++ ;
 			}
 			else {
@@ -418,7 +512,7 @@ public final class Test {
 			}
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to localize string using Localization", e);
+			LOGGER.log(Level.SEVERE, "Unable to localize string using Localization", e);
 			errCount++ ;
 		}
 	}
@@ -431,7 +525,7 @@ public final class Test {
 			LOGGER.info("Created/wrote to file '" + testFile + "' with string '" + testText + "'");
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to create/write to '" + testFile + "'", e);
+			LOGGER.log(Level.SEVERE, "Unable to create/write to '" + testFile + "'", e);
 			errCount++ ;
 		}
 	}
@@ -446,31 +540,41 @@ public final class Test {
 			LOGGER.info("Shell test complete");
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Shell failed to parse commands", e);
+			LOGGER.log(Level.SEVERE, "Shell failed to parse commands", e);
 		}
 	}
-	private static void test_StackTrace_trace() {
+	private static void test_StackTrace() {
 		try {
-			@SuppressWarnings("unused")
-			StackTraceElement[] trace = StackTrace.trace();
-			LOGGER.info("Successfully generated stack trace");
+			StackTrace.trace();
+			LOGGER.info("Successfully generated stack trace (at line " + (StackTrace.getLine() - 1) + ")");
+			StackTrace trace = new StackTrace();
+			if (trace.ownerClass().equals("zeropoint.core.Test")) {
+				if (trace.ownerSimpleClass().equals("Test")) {
+					if (trace.ownerMethod().equals("test_StackTrace")) {
+						LOGGER.info("Successfully instantiated StackTrace");
+						return;
+					}
+				}
+			}
+			throw new RuntimeException("Instantiated StackTrace malfunctioned!\n{\n\townerClass: " + trace.ownerClass() + "\n\townerSimpleClass: " + trace.ownerSimpleClass() + "\n\townerMethod: " + trace.ownerMethod() + "\n}");
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to generate stack trace", e);
+			errCount++ ;
+			LOGGER.log(Level.SEVERE, "StackTrace error", e);
 		}
 	}
 	private static void test_StringUtil_boolParse() {
 		try {
 			for (String c : StringUtil.boolFalse) {
 				if ( !StringUtil.isFalse(c)) {
-					LOGGER.warning("String '" + c + "' not parsed as boolean false!");
+					LOGGER.severe("String '" + c + "' not parsed as boolean false!");
 					errCount++ ;
 					return;
 				}
 			}
 			for (String c : StringUtil.boolTrue) {
 				if ( !StringUtil.isTrue(c)) {
-					LOGGER.warning("String '" + c + "' not parsed as boolean true!");
+					LOGGER.severe("String '" + c + "' not parsed as boolean true!");
 					errCount++ ;
 					return;
 				}
@@ -478,7 +582,7 @@ public final class Test {
 			LOGGER.info("Successfully parsed booleans from strings using StringUtil");
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to parse booleans from strings using StringUtil", e);
+			LOGGER.log(Level.SEVERE, "Unable to parse booleans from strings using StringUtil", e);
 		}
 	}
 	private static void test_StringUtil_reverse() {
@@ -487,11 +591,11 @@ public final class Test {
 				LOGGER.info("Successfully reversed strings using StringUtil");
 			}
 			else {
-				LOGGER.warning("Failed to reverse strings using StringUtil");
+				LOGGER.severe("Failed to reverse strings using StringUtil");
 			}
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to reverse strings using StringUtil", e);
+			LOGGER.log(Level.SEVERE, "Unable to reverse strings using StringUtil", e);
 		}
 	}
 	private static void test_StringUtil_split() {
@@ -502,7 +606,7 @@ public final class Test {
 			}
 			else {
 				errCount++ ;
-				LOGGER.warning("StringUtil.split(String, String) failed to split string with escaped delimiter");
+				LOGGER.severe("StringUtil.split(String, String) failed to split string with escaped delimiter");
 				if (MODE_DEBUG) {
 					for (int i = 0; i < ret.length; i++ ) {
 						LOGGER.fine((i + 1) + ": " + ret[i]);
@@ -512,7 +616,7 @@ public final class Test {
 		}
 		catch (Exception e) {
 			errCount++ ;
-			LOGGER.log(Level.WARNING, "Unable to split string using StringUtil", e);
+			LOGGER.log(Level.SEVERE, "Unable to split string using StringUtil", e);
 		}
 	}
 }
